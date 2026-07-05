@@ -1,0 +1,79 @@
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: sskodbox
+    ports:
+      - "${APP_PORT:-8096}:80"
+    environment:
+      DB_TYPE: ${DB_TYPE:-mysql}
+      DB_HOST: ${DB_HOST:-db}
+      DB_PORT: ${DB_PORT:-3306}
+      DB_NAME: ${DB_NAME:-sskodbox}
+      DB_USER: ${DB_USER:-sskodbox}
+      DB_PASS: ${DB_PASS:-sskodbox}
+      DB_ROOT_PASS: ${DB_ROOT_PASS:-root123}
+      CACHE_TYPE: ${CACHE_TYPE:-file}
+      REDIS_HOST: ${REDIS_HOST:-redis}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      REDIS_AUTH: ${REDIS_AUTH:-}
+      ADMIN_USER: ${ADMIN_USER:-admin}
+      ADMIN_PASS: ${ADMIN_PASS:-Admin@123!}
+      TIMEZONE: ${TIMEZONE:-Asia/Shanghai}
+    volumes:
+      - kodbox_data:/var/www/kod/data
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - sskodbox-net
+
+  db:
+    image: mysql:8.0
+    container_name: sskodbox-db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASS:-root123}
+      MYSQL_DATABASE: ${DB_NAME:-sskodbox}
+      MYSQL_USER: ${DB_USER:-sskodbox}
+      MYSQL_PASSWORD: ${DB_PASS:-sskodbox}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - sskodbox-net
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --max_allowed_packet=512M
+      - --innodb_log_file_size=256M
+
+  redis:
+    image: redis:7-alpine
+    container_name: sskodbox-redis
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - sskodbox-net
+
+volumes:
+  kodbox_data:
+  mysql_data:
+  redis_data:
+
+networks:
+  sskodbox-net:
+    driver: bridge

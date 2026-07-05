@@ -379,7 +379,7 @@ $config['editorDefault'] = array(
 $config['settings']['sourceMeta'] = array(
 	'configItem'	=> array(
 		'defaultShow'	=> 'user_sourceAlias,user_sourceCover', 					 	//默认显示的key;
-		'fileAllow'		=> 'user_sourceAlias,user_sourceCover,user_sourceNumber,user_sourceParticipant', //文件支持的key
+		        'fileAllow'     => 'user_sourceAlias,user_sourceCover,user_sourceNumber,user_sourceParticipant,reviewStatus', //文件支持的key
 		'folderAllow'	=> 'user_sourceAlias,user_sourceCover,user_sourceParticipant',					//文件夹支持的key
 	),
 	'user_sourceAlias' => array(
@@ -418,12 +418,17 @@ $config['settings']['sourceMeta'] = array(
 		"display" 	=> "宗卷编号",
 	),
 	//扩展;
-	'user_sourceParticipant' => array(
-		"type"		=> "user",
-		"value"		=> "",
-		"display" 	=> "参与者",
-		"selectType"=> "mutil",
-	),
+    'user_sourceParticipant' => array(
+        "type"    => "user",
+        "value"   => "",
+        "display" => "参与者",
+        "selectType" => "mutil",
+    ),
+    'reviewStatus' => array(
+        "type"    => "input",
+        "value"   => "未校对",
+        "display" => "校对状态",
+    ),
 );
 
 // name优先识别为多语言key,不存在则以name为原名;

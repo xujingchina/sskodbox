@@ -1,0 +1,21 @@
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: sskodbox
+    ports:
+      - "${APP_PORT:-8096}:80"
+    environment:
+      DB_TYPE: sqlite
+      CACHE_TYPE: file
+      ADMIN_USER: ${ADMIN_USER:-admin}
+      ADMIN_PASS: ${ADMIN_PASS:-admin123}
+      ADMIN_AUTO_PASS: ${ADMIN_AUTO_PASS:-0}
+      TIMEZONE: ${TIMEZONE:-Asia/Shanghai}
+    volumes:
+      - kodbox_data:/var/www/kod/data
+    restart: unless-stopped
+
+volumes:
+  kodbox_data:
